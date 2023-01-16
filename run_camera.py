@@ -34,6 +34,8 @@ while True:
     
     for (x,y,w,h) in faces:
         canvas=np.asarray(np.copy(frame))#canvas to lay image over backround
+
+        #cv2.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),2)
         
         cr=(20 if 20<=x and 20<=y else 0)#crop range
         #cv2.rectangle(frame,(x,y),(x+w,y+h),(255,0,0),2)#circle the detected face
@@ -62,14 +64,18 @@ while True:
 
            #merge emoji images with main frame
            #resize emoji to detected face area width and height to maintain change by face distance
-           canvas=add_transparent_image(canvas,cv2.resize(label_emojis[predicted],(w,h),interpolation=cv2.INTER_AREA),x,y-h)#insert emoji to
+           #canvas=add_transparent_image(canvas,cv2.resize(label_emojis[predicted],(w,h),interpolation=cv2.INTER_AREA),x,y-h)#insert emoji to
+           frame=add_transparent_image(frame,cv2.resize(label_emojis[predicted],(w,h),interpolation=cv2.INTER_AREA),x,y-h)#insert emoji to
 
            #add appropriate filter by prediction
-           insert_filt(predicted,keypoints,canvas,x,y,w,h,roi_color)
+           #insert_filt(predicted,keypoints,canvas,x,y,w,h,roi_color)
+           insert_filt(predicted,keypoints,frame,x,y,w,h,roi_color)
+           
            #canvas=add_transparent_image(canvas,cv2.resize(label_filters[predicted],(64,64),interpolation=cv2.INTER_AREA),x+det_x,y+det_y)
-           cv2.putText(frame,label,label_position,cv2.FONT_HERSHEY_SIMPLEX,2,(0,255,0),3)
+           cv2.putText(frame,label,(40,20),cv2.FONT_HERSHEY_SIMPLEX,1,(0,255,0),3)
+           #cv2.putText(canvas,label,(40,20),cv2.FONT_HERSHEY_SIMPLEX,1,(0,255,0),3)
         else:
-           cv2.putText(frame,'No Face Found',(20,20),cv2.FONT_HERSHEY_SIMPLEX,2,(0,255,0),3)
+           cv2.putText(frame,'No Face Found',(40,20),cv2.FONT_HERSHEY_SIMPLEX,2,(0,255,0),3)
            
     #cv2.imshow('detected face',cv2.resize(roi_color,(0,0),fx=4,fy=4))
     """
@@ -78,8 +84,10 @@ while True:
     bone_canvas[0:tempx,0:tempy,:]=roi_color
     #bone_canvas[tempx:tempx+roi_gray.shape[1] , tempy:tempy+roi_gray.shape[0],:]=roi_gray
     """
+    
+    roi_color=cv2.resize(roi_color,(320,320),interpolation=cv2.INTER_AREA)#resize to marker model input size
     cv2.imshow('landmarks-overlook',roi_color)#cv2.resize(frame,(0,0),fx=2,fy=2))
-    cv2.imshow('Face detection and Emotion Analysis',canvas)#cv2.resize(frame,(0,0),fx=2,fy=2))
+    cv2.imshow('Face detection and Emotion Analysis',frame)#cv2.resize(frame,(0,0),fx=2,fy=2))
     if cv2.waitKey(1) & 0xFF == ord('q'): 
         break
 cap.release()

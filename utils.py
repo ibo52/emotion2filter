@@ -164,6 +164,28 @@ def insert_filt(emotion:int,keypoints,canvas,face_x,face_y,width,height,roi):
 
         _ANIM_COUNTER+=1
 
+    elif emotion==1:#disgust
+        marking=keypoints[ mark_loc["mouth"][0]:mark_loc["mouth"][1] ]
+
+        filt_x=np.mean(marking[:,0])
+        filt_y=np.mean(marking[:,1])
+
+        #cv2.circle(roi,(int(mouth_x),int(mouth_y)),2,(255,255,0),-1)
+
+        fitx,fity=width/250, height/250
+        #filter width:difference of x-axis of jawline points:1-17
+        #filter height:difference of y-axis of left eyebrow point(19) and mean(eye) points
+        f_w,f_h=abs( keypoints[48,0]-keypoints[54,0] )+30, (abs( keypoints[28,1]- keypoints[8,1] ))#filter size(sunglasses)
+        #f_w,f_h=244,106
+        filt_x-=f_w/2
+        
+        filt_im=label_filters[emotion]#vomit gif
+        
+        #canvas
+        add_transparent_image(canvas, cv2.resize( filt_im[_ANIM_COUNTER%len(filt_im)], (int(f_w*fitx),int(f_h*fity)), interpolation=cv2.INTER_AREA) ,int(face_x+filt_x*fitx),int(face_y+filt_y*fity) )
+        _ANIM_COUNTER+=1
+        #
+        #
         
     elif emotion==3:#happy
         #extract eye landmarks for filter
@@ -269,7 +291,39 @@ def insert_filt(emotion:int,keypoints,canvas,face_x,face_y,width,height,roi):
         add_transparent_image(canvas, cv2.resize(filt_im,(int(f_w),int(f_h)),interpolation=cv2.INTER_AREA) ,int(face_x+right_ex*fity) , int(face_y+ right_ey*fity)+ velocity[(_ANIM_COUNTER+3)%12])
 
         _ANIM_COUNTER+=1
+    """
+    elif emotion==6:#surprise
+        marking=keypoints[ mark_loc["mouth"][0]:mark_loc["mouth"][1] ]
 
+        filt_x=np.mean(marking[:,0])
+        filt_y=np.mean(marking[:,1])
+
+        #cv2.circle(roi,(int(mouth_x),int(mouth_y)),2,(255,255,0),-1)
+
+        fitx,fity=width/250, height/250
+        #filter width:difference of x-axis of jawline points:1-17
+        #filter height:difference of y-axis of left eyebrow point(19) and mean(eye) points
+        f_w,f_h=abs( keypoints[0,0]-keypoints[16,0])+20 , abs( keypoints[19,1]- keypoints[1,1])+10 #filter width and height over image(crown of inner peace)
+        beard_x,beard_y=keypoints[0,0], keypoints[0,1]
+        #
+        #
+        hair_w, hair_h=100,f_h
+        
+        
+        hair_img=cv2.imread("/home/ibrahim/Downloads/hair.png",cv2.IMREAD_UNCHANGED)
+        scale_f=1.5*f_w/hair_img.shape[0]
+        
+        
+        hair_img=cv2.resize(hair_img ,None, fx=scale_f,fy=scale_f)
+        print("hair:",hair_img.shape,"fw,fh=",f_w,f_h)
+        
+        hair_x,hair_y=keypoints[0,0]-10, keypoints[0,1]-hair_img.shape[0]+40
+        
+        #canvas cv2.resize(hair_img, (int(f_w*fitx),int(f_h*fity)), interpolation=cv2.INTER_AREA )
+        add_transparent_image(canvas, hair_img ,int(face_x+hair_x*fitx),int(face_y+hair_y*fity) )
+        #
+        #
+    """
 
 
 def read_gif(path=""):
@@ -294,14 +348,13 @@ def read_gif(path=""):
         except EOFError:
             pass # end of sequence
     return i
-
 #taken from IBM website and opecv github page
 cascades={"face":'haarcascade_frontalface_default.xml',
           "left-eye":"haarcascade_eye.xml",
           "right-eye":"haarcascade_righteye_2splits.xml",
           "mouth":"haarcascade_smile.xml"}
 
-casc_path="cascades-openCV/"
+casc_path="model/"
 
 face_classifier=cv2.CascadeClassifier(casc_path + cascades["face"])
 
@@ -329,7 +382,7 @@ label_emojis=[np.asarray(cv2.resize(cv2.imread(emoji_path+"Angry.png",cv2.IMREAD
               ]
 
 label_filters=[np.asarray(cv2.resize(cv2.imread(emoji_path+"Angry-f.png",cv2.IMREAD_UNCHANGED),(250,250))),
-              np.asarray(cv2.resize(cv2.imread(emoji_path+"Disgust.png",cv2.IMREAD_UNCHANGED),(250,250))),
+              read_gif("emojis/Disgust-f.gif"),#np.asarray(cv2.resize(cv2.imread(emoji_path+"Disgust.png",cv2.IMREAD_UNCHANGED),(250,250))),
               np.asarray(cv2.resize(cv2.imread(emoji_path+"Fear.png",cv2.IMREAD_UNCHANGED),(250,250))),
               np.asarray(cv2.resize(cv2.imread(emoji_path+"Happy-f.png",cv2.IMREAD_UNCHANGED),(250,250))),
               np.asarray(cv2.resize(cv2.imread(emoji_path+"Neutral-f.png",cv2.IMREAD_UNCHANGED),(250,250))),
