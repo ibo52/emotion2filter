@@ -10,8 +10,9 @@
 
 
 #Datasets references
-FACIAL LANDMARK | train: http://users.sussex.ac.uk/~is321/training_images.npz | test: http://users.sussex.ac.uk/~is321/test_images.npz
+DATASET | train data | test data|
 --- | --- | --- |
+FACIAL LANDMARK | train: http://users.sussex.ac.uk/~is321/training_images.npz | test: http://users.sussex.ac.uk/~is321/test_images.npz
 EMOTION | https://www.kaggle.com/datasets/jonathanoheix/face-expression-recognition-dataset| test also included in link
 
 # Sample outputs
