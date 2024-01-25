@@ -6,6 +6,7 @@ from keras.layers import Conv2D, MaxPooling2D
 from keras.regularizers import l2
 from keras.optimizers import RMSprop, SGD, Adam
 from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau, LearningRateScheduler
+from keras.models import load_model
 
 import os
 import numpy as np
@@ -25,7 +26,8 @@ class ANNClassifierModel:
                  batch_size=32, epoch=100):
 
         self.name=name if name.endswith(".h5") else name+".h5"
-
+        self.modelPath="model/"
+        
         self.img_rows, self.img_cols, self.channels = img_input_shape #model input shape
 
         self.colorMode="grayscale" if self.channels==1 else "rgb"#channel:RGB or grayscaled
@@ -208,18 +210,17 @@ class ANNClassifierModel:
     def check_for_any_saved_model(self):
         """load to continue training if there is a model
         trained before, or waiting to complete to train"""
-        saved_model = os.path.join(os.getcwd(), self.name)
+        saved_model = os.path.join(self.modelPath, self.name)
 
         if os.path.exists(saved_model):
-
-            from keras.models import load_model
 
             print("Saved model found. Loading..")
             print("BE Careful! If you set any new layer of model to train, you have to delete this model")
             print("or it may cause error since it is old model")
             self.model = load_model(saved_model)
+            
         else:
-            print("No save model found. Pass..")
+            print(f"No save model found at: '{saved_model}'. Pass..")
 
     def fit_model(self):
         self.elapsed_time = dt.now()
@@ -232,14 +233,14 @@ class ANNClassifierModel:
         print("Training complete. Elapsed time:",self.elapsed_time)
         self.plot_results()
 
-    def plot_results(self, saveToDisk=True):
+    def plot_results(self, supTitle:str="estimated results of model", saveToDisk=True):
         # plot results:
         #accuracies
         fig, axs = plt.subplots(2)
 
         labels_ = ["test set", "validation set"]
 
-        fig.suptitle("estimated results of model")
+        fig.suptitle(supTitle)
         axs[0].plot(self.history.history['accuracy'], marker="o")
         axs[0].plot(self.history.history['val_accuracy'], marker="o")
         axs[0].set_title("Accuracy")

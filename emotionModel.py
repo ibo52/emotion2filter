@@ -95,7 +95,7 @@ if __name__=="__main__":
     you simply have to override 'build_ANN(self):' function
     """)
     
-    _Model=EmotionModel(data_path="dataset/emotion-data")
+    _Model=EmotionModel(name="EmotionDetectionModel.h5",data_path="dataset/emotion-data")
     _Model.fit_model()
     with open("emotionLabels.py","w") as f:
         f.write(f"emotionLabels_={_Model.labels}")

@@ -6,8 +6,8 @@ import cv2
 from keras.preprocessing.image import ImageDataGenerator
 
 import tensorflow as tf
-from tensorflow.keras.models import Sequential,load_model
-from tensorflow.keras.layers import Dense, Dropout, Activation, Flatten, Conv2D, MaxPooling2D,BatchNormalization
+from keras.models import Sequential,load_model
+from keras.layers import Dense, Dropout, Activation, Flatten, Conv2D, MaxPooling2D,BatchNormalization
 
 
 # Load the np image data using np.load
